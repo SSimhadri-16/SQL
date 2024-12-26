@@ -78,3 +78,56 @@ Select eventname, startdate from eventmanagement where date_trunc('month',startd
 --Q12. Find the total number of registrations for events happening in the same month.
 Select  extract(month from startdate) as month, sum(totalregistrations) from eventmanagement
 group by extract(month from startdate) order by month
+
+--Calculate the total payments made in each quarter of 2024 and determine the percentage contribution of each quarter to the yearly total.
+select 
+case 
+   when extract(month from payment_Date) in (1,2,3) then 'Q1-2024'
+   when extract(month from payment_Date) in (4,5,6) then 'Q2-2024'
+   when extract(month from payment_Date) in (7,8,9) then 'Q3-2024'
+   else 'Q4-2024'
+end as quarters,
+sum(payment_amount) as total_payment,
+round(sum(payment_amount)*100/(select sum(payment_amount) from loan_payments),2) as percentage_contribution
+from loan_payments
+group by quarters;
+
+--Calculate the total payment amount for each month in the year 2024. Classify the payment totals into three categories:
+--1.Low: If the total payment amount is less than ₹2000.
+--2.Moderate: If the total payment amount is between ₹2000 and ₹2500.
+--3.High: If the total payment amount is greater than ₹2500.
+Select date_trunc('month', payment_date) as month_start_date,
+sum(payment_amount) as monthly_payment,
+case 
+when sum(payment_amount)<2000 then 'Low'
+when sum(payment_amount) between 2000 and 2500 then 'Moderate'
+else 'High'
+end as payment_category,
+to_char(date_trunc('month', payment_date),'Month') as month_label
+from loan_payments group by month_start_date
+
+--Calculate and compare the total sales made during the first 5 days and the last 5 days of each month in 2024. The output should include:
+--1.Month start date.
+--2.Total sales for the first 5 days.
+--3.Total sales for the last 5 days.
+--4.Indicate whether the first 5 days' sales were higher, lower, or equal to the last 5 days' sales.
+Select date_trunc('month', order_date) as month_startdate,
+sum(case 
+when extract(day from order_date) in (01,02,03,04,05)  then total_amount
+else 0
+end) as first_5day_sales,
+sum(case
+when date_trunc('day', order_date)>= (date_trunc('month',order_date)+ interval '1 month'- interval '5 day') then total_amount
+else 0
+end) as last_5day_sales,
+case 
+when (sum(case when extract(day from order_date) in (01,02,03,04,05)  then total_amount
+else 0 end)) > (sum(case
+when date_trunc('day', order_date)>= (date_trunc('month',order_date)+ interval '1 month'- interval '5 day') then total_amount
+else 0 end)) then 'Higher'
+when (sum(case when extract(day from order_date) in (01,02,03,04,05)  then total_amount
+else 0 end)) < (sum(case
+when date_trunc('day', order_date)>= (date_trunc('month',order_date)+ interval '1 month'- interval '5 day') then total_amount
+else 0 end))  then 'Lower'
+else 'Equal'
+end as sales_comparison from Transactions group by  order_date order by month_startdate
