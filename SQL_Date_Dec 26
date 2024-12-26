@@ -1,0 +1,80 @@
+CREATE TABLE EventManagement (
+EventID SERIAL PRIMARY KEY,
+EventName VARCHAR(100),
+OrganizerName VARCHAR(100),
+StartDate DATE,
+EndDate DATE,
+RegistrationDeadline DATE,
+LastUpdate TIMESTAMP,
+TotalRegistrations INT
+);
+
+INSERT INTO EventManagement (EventName, OrganizerName, StartDate, EndDate, RegistrationDeadline, LastUpdate, TotalRegistrations) VALUES
+('Tech Conference 2024', 'Tech Corp', '2024-01-15', '2024-01-18', '2024-01-10', '2023-12-01 10:00:00', 300),
+('AI Summit', 'AI Innovators', '2024-03-05', '2024-03-07', '2024-02-25', '2024-02-01 12:00:00', 500),
+('Music Fest', 'Live Nation', '2024-05-20', '2024-05-22', '2024-05-10', '2024-04-25 15:00:00', 800),
+('Gaming Expo', 'Esports Inc.', '2024-06-01', '2024-06-03', '2024-05-28', '2024-05-20 09:00:00', 450),
+('Startup Meet', 'Startup Hub', '2024-07-12', '2024-07-14', '2024-07-05', '2024-06-30 14:00:00', 250),
+('Health and Wellness Fair', 'Healthy Life', '2024-08-18', '2024-08-20', '2024-08-10', '2024-07-30 11:00:00', 400),
+('Food Carnival', 'Foodies United', '2024-09-05', '2024-09-07', '2024-08-30', '2024-08-15 16:00:00', 600),
+('Book Expo', 'Readers Club', '2024-10-10', '2024-10-12', '2024-10-05', '2024-09-20 18:00:00', 350),
+('Auto Show', 'Car Enthusiasts', '2024-11-01', '2024-11-03', '2024-10-25', '2024-10-15 19:00:00', 700),
+('Photography Workshop', 'Shutter Pro', '2024-12-15', '2024-12-16', '2024-12-10', '2024-12-01 17:00:00', 150),
+('Coding Hackathon', 'Dev Hub', '2024-02-20', '2024-02-22', '2024-02-15', '2024-02-05 10:30:00', 200),
+('Fashion Week', 'Style Vision', '2024-04-10', '2024-04-13', '2024-04-05', '2024-03-20 14:30:00', 500),
+('Yoga Retreat', 'Calm Mind', '2024-05-15', '2024-05-17', '2024-05-10', '2024-04-28 08:00:00', 100),
+('Startup Pitch', 'Entrepreneurs Club', '2024-07-01', '2024-07-02', '2024-06-25', '2024-06-15 12:00:00', 300),
+('Art Exhibition', 'Creative Minds', '2024-09-20', '2024-09-22', '2024-09-15', '2024-08-25 13:00:00', 450),
+('Job Fair', 'Career Connect', '2024-10-25', '2024-10-27', '2024-10-20', '2024-10-01 09:00:00', 800),
+('Fitness Challenge', 'Fit Club', '2024-11-15', '2024-11-17', '2024-11-10', '2024-10-30 18:00:00', 200),
+('Photography Contest', 'Shutter Genius', '2024-12-05', '2024-12-07', '2024-12-01', '2024-11-20 14:00:00', 180),
+('Data Science Bootcamp', 'Analytics Co.', '2024-01-10', '2024-01-12', '2024-01-05', '2023-12-20 12:00:00', 350),
+('Robotics Workshop', 'Tech Robotics', '2024-03-25', '2024-03-27', '2024-03-20', '2024-03-01 15:00:00', 150),
+('Film Festival', 'Movie Magic', '2024-06-10', '2024-06-12', '2024-06-05', '2024-05-20 13:00:00', 600),
+('Science Fair', 'Innovators League', '2024-07-15', '2024-07-18', '2024-07-10', '2024-06-30 11:00:00', 400),
+('Drama Fest', 'Theater Lovers', '2024-08-05', '2024-08-07', '2024-07-30', '2024-07-15 16:30:00', 250),
+('Music Workshop', 'Melody Makers', '2024-09-15', '2024-09-16', '2024-09-10', '2024-09-01 10:00:00', 150),
+('Tech Hackathon', 'Code Experts', '2024-11-20', '2024-11-22', '2024-11-15', '2024-11-01 12:00:00', 350);
+
+Select * from EventManagement;
+
+--Q1. Retrieve the current system date, time, and timestamp.
+Select current_date as Date, current_time as time , current_timestamp as timestamp;
+
+--Q2. Retrieve the year, month, and day from the StartDate of each event.
+Select extract(year from startdate) as Year, extract(month from startdate) as Month,
+extract(day from startdate) as Day from eventmanagement 
+
+--Q3. Get the day name, month name, and year from a Date
+Select to_char(startdate,'Day') as Day, to_char(startdate,'Month') as Month,
+to_char(startdate,'YYYY') as Year from eventmanagement
+
+--Q4. Calculate how many days are left until the registration deadline for each event.
+Select eventname, registrationdeadline, current_date as today, 
+registrationdeadline - current_date as number_of_days from eventmanagement
+
+--Q5. Retrieve events where the RegistrationDeadline has already passed.
+Select eventname from eventmanagement where registrationdeadline<current_date
+
+--Q6. Find the registration deadlines extended by 5 days
+Select (registrationdeadline + Interval '5 day')::DATE as extended_registrationdeadline from eventmanagement
+
+--Q7. Calculate the total time (in days and hours) between the StartDate and EndDate for each event.
+Select eventname,startdate::TIMESTAMP,enddate::TIMESTAMP, enddate::TIMESTAMP-startdate::TIMESTAMP as days,
+round(extract(EPOCH from (enddate::TIMESTAMP-startdate::TIMESTAMP))/3600,2) as hours from eventmanagement
+
+--Q8. Find the day of the week for the StartDate of each event.
+Select startdate, extract(dow from startdate) as day_of_week, to_char(startdate,'DAY') from eventmanagement
+
+--Q9. Convert a string 2024-12-15 to a date and calculate how many days it is from today.
+Select '2024-12-15'::DATE as date, current_date - '2024-12-15'::DATE as no_of_days
+
+--Q10. Format the StartDate in DD-MM-YYYY format for display purposes.
+Select startdate, to_char(startdate,'DD-MM-YYYY') as changed_startdate from eventmanagement
+
+--Q11. Retrieve events that will take place in December 2024.
+Select eventname, startdate from eventmanagement where date_trunc('month',startdate) = '2024-12-01'
+
+--Q12. Find the total number of registrations for events happening in the same month.
+Select  extract(month from startdate) as month, sum(totalregistrations) from eventmanagement
+group by extract(month from startdate) order by month
