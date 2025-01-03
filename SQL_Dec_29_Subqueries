@@ -1,0 +1,42 @@
+
+--Q1. Find all transactions where the total amount is greater than the average total amount.
+Select transaction_id, customer_name, total_amount from Transactions 
+where total_amount > (Select avg(total_amount) from Transactions);
+
+--Q2. Find the customer who has spent the maximum amount in a single transaction.
+Select customer_name from Transactions where total_amount=(Select max(total_amount) from Transactions);
+
+--Q3. Find transactions where the quantity of items purchased is greater than the average quantity.
+Select transaction_id from Transactions where quantity > (Select avg(quantity) from Transactions);
+
+--Q4. Find all customers who have made transactions in Bengaluru or Chennai
+Select customer_name from transactions where city in (Select city from transactions where city in ('Bengaluru','Chennai'))
+
+--Q5. Find all transactions where the product purchased was the same 
+--as the product purchased in the most recent transaction
+Select * from Transactions where product_name in
+(Select product_name from Transactions where order_date=
+ (Select MAX(order_date) from Transactions))
+
+--Q6. Find customers who have purchased either "Mobile" and "Laptop."
+Select customer_name, product_name from Transactions where product_name in 
+(Select product_name from Transactions where product_name = 'Mobile' or product_name = 'Laptop')
+
+--EXISTS 
+--Q1. Find Customers with Transactions Above ₹5000
+Select * from Transactions where exists (Select * from Transactions
+ where total_amount>5000)
+
+--Q2. Find Cities Where "Laptop" Was Purchased
+Select distinct city from Transactions where exists
+(Select 1 from Transactions where product_name = 'Laptop')
+
+--Q3. Find Customers Who Have Purchased More Than One Product
+Select customer_name from Transactions as t1 where exists
+(Select 1 from Transactions as t2 where t1.customer_name = t2.customer_name 
+ group by customer_name having count(product_name)>1 )
+
+--Q4. Find all customers who have purchased all the products that "Ritika Mehra") has purchased.
+Select customer_name from Transactions as t1 where exists
+(Select 1 from Transactions as t2 where t2.customer_name = 'Ritika Mehra' and 
+ t1.product_name=t2.product_name and t1.customer_name!='Ritika Mehra')
