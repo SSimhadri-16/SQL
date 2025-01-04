@@ -40,3 +40,82 @@ Select customer_name from Transactions as t1 where exists
 Select customer_name from Transactions as t1 where exists
 (Select 1 from Transactions as t2 where t2.customer_name = 'Ritika Mehra' and 
  t1.product_name=t2.product_name and t1.customer_name!='Ritika Mehra')
+
+--String Functions
+--Q1. Combine the string_value and additional_string columns with a hyphen (-) separator. Display the result as combined_string.
+Select string_value || ' - ' || additional_string as concatenated_string from samplestrings;
+--(OR)
+Select concat(string_value,' - ',additional_string) as concat_string from samplestrings;
+
+--Q2. Find the length of each string_value in terms of characters.
+Select string_value,length(string_value) as string_length from samplestrings;
+
+--Q3. Extract the first 5 characters from the string_value column
+Select string_value, substring(string_value,1,5) as substr_value from samplestrings
+--for substring, length(3rd param) is optional
+
+--Q4. Replace the word 'Data' in string_value with 'Information'.
+Select string_value, replace(string_value,'Art','Sci') as replaced_value from samplestrings
+
+--Q5. Convert all additional_string values to uppercase and lowercase.
+Select additional_string, lower(additional_string) as lowercase,upper(additional_string) as uppercase from samplestrings
+
+--Q6. Remove leading and trailing spaces from the string_value column
+Select string_value, trim(string_value) from samplestrings
+
+--Q7. Reverse the characters in each string_value
+Select string_value, reverse(string_value) from samplestrings
+
+--Q8. Repeat each string_value three times, separated by spaces.
+Select string_value, repeat(string_value,3) from samplestrings
+
+--Q9. Add padding with * to make each string_value 25 characters long.
+Select string_value, LPAD(string_value,25,'*') as padded_string from samplestrings
+
+--Q10. Find the position of the word 'Data' in string_value
+select string_value, position('SQL' in string_value) as position_ind from samplestrings;
+
+--For SQL- select string_value, locate('SQL',string_value) as position_ind from samplestrings;
+
+--Find rows where string_value starts with 'Data'
+Select * from samplestrings where string_value like 'Data%'
+
+Select string_value,  position('Data' in string_value)  from samplestrings where position('Data' in string_value)=1
+--Using regex
+select string_value from samplestrings where string_value ~ '^Data';
+--For SQL - select string_value from samplestrings where string_value REGEXP '^Data';
+
+--Q11.Identify rows where additional_string contains the word 'Data'.
+Select additional_string from samplestrings where position('Data' in additional_string)=1
+
+--Q12. Extract the first word from string_value. Use a delimiter (space) to separate words.
+--for sql - Select string_Value,substring_index(string_value,' ',2) as first_Word from samplestrings;
+
+Select string_value, split_part(string_value,' ',2) as second_word from samplestrings
+
+--Q13. Determine the ASCII value of the first character in string_value.
+Select string_value, ASCII(substring(string_value,1,1)) as ascii_value from samplestrings
+
+--Q14. Check if string_value contains the word SQL in a case-sensitive manner.
+Select string_value from samplestrings where position(upper('sql') in string_value)=1;
+
+--Q15. Replace all spaces in string_value with underscores (_).
+Select string_value, replace(string_value,' ','_') from samplestrings;
+
+--Q16. Find the position of the first occurrence of the letter e in string_value.
+Select string_value, position('e' in string_value) from samplestrings;
+
+--Q17. Remove leading and trailing spaces from string_value.
+Select string_value, trim(string_value) from samplestrings;
+
+--Q18. Replace all vowels (a, e, i, o, u) in string_value with *.
+Select string_value , replace(replace(replace(replace(replace(string_value,'a','*'),'e','*'),'i','*'),'o','*'),'u','*') 
+from samplestrings;
+--(OR)
+Select string_value, REGEXP_REPLACE(string_value,'[aeiou]','*','gi') from samplestrings;
+
+--Q19. Find the starting position of the substring Data in string_value
+Select string_value, position('Data' in string_value) as position from samplestrings;
+
+--Q20. Count how many rows have string_value containing the word Data.
+Select count(*) as row_count from samplestrings where position('Data' in string_value)>0;
